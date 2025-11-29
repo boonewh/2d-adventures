@@ -8,6 +8,7 @@ export class GameScene extends Phaser.Scene {
   private player?: Player;
   private map?: Phaser.Tilemaps.Tilemap;
   private enemies: IceSlime[] = [];
+  private healthText?: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -74,15 +75,17 @@ export class GameScene extends Phaser.Scene {
     ).setScrollFactor(0);
 
     // Health display (top-left corner, fixed to camera)
-    this.add.text(
+    this.healthText = this.add.text(
       10,
       10,
-      'Health:',
+      '',
       {
-        fontSize: '14px',
-        color: '#ffffff',
+        fontSize: '16px',
+        color: '#ff0000',
+        fontStyle: 'bold',
       }
     ).setScrollFactor(0);
+    this.updateHealthDisplay();
 
     console.log('GameScene created successfully!');
     console.log('Map size:', worldWidth, 'x', worldHeight);
@@ -105,8 +108,28 @@ export class GameScene extends Phaser.Scene {
   private setupCombat(): void {
     if (!this.player) return;
 
-    // Player attack hits enemies
+    // Add collision between player and enemies (pushback)
     this.enemies.forEach(enemy => {
+      this.physics.add.collider(this.player!, enemy, () => {
+        // Push player and enemy apart
+        if (!enemy.isDead()) {
+          this.player!.takeDamage(enemy.damage);
+
+          // Knockback effect
+          const angle = Phaser.Math.Angle.Between(
+            enemy.x,
+            enemy.y,
+            this.player!.x,
+            this.player!.y
+          );
+          this.player!.setVelocity(
+            Math.cos(angle) * 200,
+            Math.sin(angle) * 200
+          );
+        }
+      });
+
+      // Player attack hits enemies (using overlap for hitbox check)
       this.physics.add.overlap(
         this.player!,
         enemy,
@@ -116,24 +139,32 @@ export class GameScene extends Phaser.Scene {
           if (hitbox) {
             this.physics.add.overlap(hitbox, enemy, () => {
               enemy.takeDamage(this.player!.damage);
+
+              // Knockback enemy when hit
+              const angle = Phaser.Math.Angle.Between(
+                this.player!.x,
+                this.player!.y,
+                enemy.x,
+                enemy.y
+              );
+              enemy.setVelocity(
+                Math.cos(angle) * 150,
+                Math.sin(angle) * 150
+              );
             });
           }
         }
       );
-
-      // Enemy damages player on contact
-      this.physics.add.overlap(
-        this.player!,
-        enemy,
-        () => {
-          if (!enemy.isDead()) {
-            this.player!.takeDamage(enemy.damage);
-          }
-        },
-        undefined,
-        this
-      );
     });
+  }
+
+  private updateHealthDisplay(): void {
+    if (!this.player || !this.healthText) return;
+
+    // Create heart display (♥ symbols)
+    const hearts = '♥'.repeat(this.player.health);
+    const emptyHearts = '♡'.repeat(this.player.maxHealth - this.player.health);
+    this.healthText.setText(hearts + emptyHearts);
   }
 
   update(): void {
@@ -151,5 +182,8 @@ export class GameScene extends Phaser.Scene {
 
     // Remove destroyed enemies from array
     this.enemies = this.enemies.filter(enemy => enemy.active);
+
+    // Update health display
+    this.updateHealthDisplay();
   }
 }

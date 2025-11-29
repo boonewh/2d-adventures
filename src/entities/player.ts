@@ -120,6 +120,33 @@ export class Player extends Phaser.Physics.Arcade.Sprite implements Damageable, 
         break;
     }
 
+    // Create visual sword slash effect
+    const slashGraphics = this.scene.add.graphics();
+    slashGraphics.lineStyle(3, 0xffff00, 1); // Yellow slash
+
+    // Draw slash arc based on direction
+    if (this.lastDirection === 'up' || this.lastDirection === 'down') {
+      const offsetY = this.lastDirection === 'up' ? -15 : 15;
+      slashGraphics.beginPath();
+      slashGraphics.arc(this.x, this.y + offsetY, 15, -Math.PI / 4, Math.PI / 4, false);
+      slashGraphics.strokePath();
+    } else {
+      const offsetX = this.lastDirection === 'left' ? -15 : 15;
+      slashGraphics.beginPath();
+      slashGraphics.arc(this.x + offsetX, this.y, 15, -Math.PI / 2, Math.PI / 2, false);
+      slashGraphics.strokePath();
+    }
+
+    // Fade out slash effect
+    this.scene.tweens.add({
+      targets: slashGraphics,
+      alpha: 0,
+      duration: 200,
+      onComplete: () => {
+        slashGraphics.destroy();
+      }
+    });
+
     // Create temporary attack hitbox
     this.attackHitbox = this.scene.physics.add.sprite(hitboxX, hitboxY, '');
     this.attackHitbox.setSize(hitboxSize, hitboxSize);

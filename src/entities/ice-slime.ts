@@ -10,7 +10,7 @@ export class IceSlime extends Phaser.Physics.Arcade.Sprite implements Damageable
   private player?: Player;
   private detectionRange: number = 150;
   private attackRange: number = 20;
-  private speed: number = 80;
+  private speed: number = 60; // Reduced from 80 for slower chase
   private patrolTimer: number = 0;
   private patrolDirection: Phaser.Math.Vector2;
 
