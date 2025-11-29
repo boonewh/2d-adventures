@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tileset Generator</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #222;
+      color: #eee;
+      padding: 20px;
+    }
+    canvas {
+      border: 2px solid #4a9eff;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      transform: scale(4);
+      transform-origin: top left;
+      margin: 20px;
+    }
+    button {
+      background: #4a9eff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #3a8eef;
+    }
+    .info {
+      background: #333;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Winter Tileset Generator</h1>
+  <div class="info">
+    <p><strong>Instructions:</strong></p>
+    <ol>
+      <li>Click "Generate Tileset" to create the image</li>
+      <li>Click "Download PNG" to save it</li>
+      <li>Save as: <code>public/assets/tilesets/winter-tileset.png</code></li>
+    </ol>
+  </div>
+
+  <button onclick="generateTileset()">Generate Tileset</button>
+  <button onclick="downloadTileset()">Download PNG</button>
+
+  <div>
+    <canvas id="tileset" width="128" height="32"></canvas>
+  </div>
+
+  <div class="info">
+    <h3>Tile Legend:</h3>
+    <ul>
+      <li>0: Snow Ground (Light)</li>
+      <li>1: Snow Ground (Medium)</li>
+      <li>2: Ice/Frozen Ground</li>
+      <li>3: Stone Wall (Gray) - COLLISION</li>
+      <li>4: Dark Stone Wall - COLLISION</li>
+      <li>5: Tree - COLLISION</li>
+      <li>6: Snowy Tree - COLLISION</li>
+      <li>7: Rock/Boulder - COLLISION</li>
+      <li>8: Dirt/Path</li>
+      <li>9: Water/Ice Water</li>
+      <li>10: Deep Snow</li>
+      <li>11: Wooden Floor</li>
+      <li>12-15: Reserved (dark gray)</li>
+    </ul>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('tileset');
+    const ctx = canvas.getContext('2d');
+    const tileSize = 16;
+
+    function generateTileset() {
+      // Tile 0: Snow ground (light)
+      ctx.fillStyle = '#f0f8ff';
+      ctx.fillRect(0, 0, tileSize, tileSize);
+      ctx.fillStyle = '#e6f2ff';
+      ctx.fillRect(2, 2, 4, 4);
+      ctx.fillRect(8, 6, 3, 3);
+      ctx.fillRect(4, 10, 3, 3);
+
+      // Tile 1: Snow ground (medium)
+      ctx.fillStyle = '#e0e8f0';
+      ctx.fillRect(tileSize, 0, tileSize, tileSize);
+      ctx.fillStyle = '#d0d8e0';
+      ctx.fillRect(tileSize + 3, 3, 3, 3);
+      ctx.fillRect(tileSize + 9, 7, 2, 2);
+
+      // Tile 2: Ice/frozen ground
+      ctx.fillStyle = '#b8d4e8';
+      ctx.fillRect(tileSize * 2, 0, tileSize, tileSize);
+      ctx.fillStyle = '#a0c0d8';
+      ctx.fillRect(tileSize * 2 + 1, 1, tileSize - 2, tileSize - 2);
+      ctx.fillStyle = '#d0e0f0';
+      ctx.fillRect(tileSize * 2 + 4, 4, 2, 2);
+
+      // Tile 3: Stone wall (gray)
+      ctx.fillStyle = '#808080';
+      ctx.fillRect(tileSize * 3, 0, tileSize, tileSize);
+      ctx.fillStyle = '#606060';
+      ctx.fillRect(tileSize * 3 + 1, 1, tileSize - 2, tileSize - 2);
+      ctx.fillStyle = '#707070';
+      ctx.fillRect(tileSize * 3 + 3, 3, 4, 4);
+
+      // Tile 4: Dark stone wall
+      ctx.fillStyle = '#404040';
+      ctx.fillRect(tileSize * 4, 0, tileSize, tileSize);
+      ctx.fillStyle = '#303030';
+      ctx.fillRect(tileSize * 4 + 2, 2, 6, 6);
+
+      // Tile 5: Tree (dark green)
+      ctx.fillStyle = '#2d5016';
+      ctx.fillRect(tileSize * 5, 0, tileSize, tileSize);
+      ctx.fillStyle = '#1a3010';
+      ctx.fillRect(tileSize * 5 + 4, 4, 8, 8);
+      ctx.fillStyle = '#3d6026';
+      ctx.fillRect(tileSize * 5 + 6, 6, 4, 4);
+
+      // Tile 6: Snowy tree
+      ctx.fillStyle = '#2d5016';
+      ctx.fillRect(tileSize * 6, 0, tileSize, tileSize);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(tileSize * 6, 0, tileSize, 4);
+      ctx.fillRect(tileSize * 6 + 2, 4, 12, 2);
+
+      // Tile 7: Rock/boulder
+      ctx.fillStyle = '#606060';
+      ctx.fillRect(tileSize * 7, 0, tileSize, tileSize);
+      ctx.fillStyle = '#808080';
+      ctx.fillRect(tileSize * 7 + 2, 2, 10, 10);
+      ctx.fillStyle = '#505050';
+      ctx.fillRect(tileSize * 7 + 8, 8, 6, 6);
+
+      // Row 2
+      // Tile 8: Dirt/path
+      ctx.fillStyle = '#8b7355';
+      ctx.fillRect(0, tileSize, tileSize, tileSize);
+      ctx.fillStyle = '#6b5335';
+      ctx.fillRect(2, tileSize + 2, 4, 4);
+
+      // Tile 9: Water/ice water
+      ctx.fillStyle = '#4080c0';
+      ctx.fillRect(tileSize, tileSize, tileSize, tileSize);
+      ctx.fillStyle = '#60a0e0';
+      ctx.fillRect(tileSize + 3, tileSize + 3, 6, 6);
+
+      // Tile 10: Deep snow
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(tileSize * 2, tileSize, tileSize, tileSize);
+      ctx.fillStyle = '#f0f8ff';
+      ctx.fillRect(tileSize * 2 + 2, tileSize + 2, 12, 12);
+
+      // Tile 11: Wooden floor
+      ctx.fillStyle = '#8b6914';
+      ctx.fillRect(tileSize * 3, tileSize, tileSize, tileSize);
+      ctx.fillStyle = '#6b4914';
+      for (let i = 0; i < 3; i++) {
+        ctx.fillRect(tileSize * 3, tileSize + i * 5, tileSize, 1);
+      }
+
+      // Tile 12-15: Reserved
+      ctx.fillStyle = '#333333';
+      for (let i = 4; i < 8; i++) {
+        ctx.fillRect(tileSize * i, tileSize, tileSize, tileSize);
+      }
+
+      console.log('Tileset generated!');
+    }
+
+    function downloadTileset() {
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'winter-tileset.png';
+        link.click();
+        console.log('Tileset downloaded!');
+      });
+    }
+
+    // Auto-generate on load
+    generateTileset();
+  </script>
+</body>
+</html>
