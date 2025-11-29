@@ -175,9 +175,9 @@ export class TilemapGenerator {
       wallsData.push(row);
     }
 
-    // Create the tilemap
+    // Create the tilemap (with ground layer)
     const map = scene.make.tilemap({
-      data: [groundData, wallsData],
+      data: groundData,
       tileWidth: this.TILE_SIZE,
       tileHeight: this.TILE_SIZE,
       width: mapWidth,
@@ -188,15 +188,34 @@ export class TilemapGenerator {
     const tileset = map.addTilesetImage('winter-tileset', 'winter-tileset', this.TILE_SIZE, this.TILE_SIZE);
 
     if (!tileset) {
+      console.error('Failed to add tileset image');
       throw new Error('Failed to add tileset image');
     }
 
-    // Create layers
+    // Create ground layer
     const groundLayer = map.createLayer(0, tileset, 0, 0);
-    const wallsLayer = map.createLayer(1, tileset, 0, 0);
 
-    if (!groundLayer || !wallsLayer) {
-      throw new Error('Failed to create map layers');
+    if (!groundLayer) {
+      console.error('Failed to create ground layer');
+      throw new Error('Failed to create ground layer');
+    }
+
+    // Create walls layer from array data
+    const wallsLayer = map.createBlankLayer('walls', tileset, 0, 0, mapWidth, mapHeight);
+
+    if (!wallsLayer) {
+      console.error('Failed to create walls layer');
+      throw new Error('Failed to create walls layer');
+    }
+
+    // Populate walls layer with our data
+    for (let y = 0; y < mapHeight; y++) {
+      for (let x = 0; x < mapWidth; x++) {
+        const tileIndex = wallsData[y][x];
+        if (tileIndex !== -1) {
+          wallsLayer.putTileAt(tileIndex, x, y);
+        }
+      }
     }
 
     // Set collision for wall tiles (tiles 3-7)

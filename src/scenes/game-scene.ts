@@ -35,9 +35,11 @@ export class GameScene extends Phaser.Scene {
     this.player = new Player(this, worldWidth / 2, worldHeight / 2);
 
     // Get the walls layer for collision
-    const wallsLayer = this.map.getLayer(1)?.tilemapLayer;
+    const wallsLayer = this.map.getLayer('walls')?.tilemapLayer;
     if (wallsLayer) {
       this.physics.add.collider(this.player, wallsLayer);
+    } else {
+      console.error('Walls layer not found');
     }
 
     // Set up camera to follow player
