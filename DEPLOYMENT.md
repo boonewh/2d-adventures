@@ -114,9 +114,9 @@ Before each major release:
 ## Current Deployment Status
 
 **GitHub Repository**: https://github.com/boonewh/2d-adventures
-**Vercel Project**: (To be set up)
-**Live URL**: (Will be available after Vercel setup)
+**Vercel Project**: ✅ Deployed
+**Live URL**: https://2d-adventures.vercel.app/
 
 ---
 
-*Once you've deployed to Vercel, update this file with your live URL!*
+**Status**: ✅ Successfully deployed! Every push to `main` will auto-deploy.

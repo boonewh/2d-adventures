@@ -8,6 +8,8 @@ Embark on an epic quest to stop the eternal winter spreading across the land. Wh
 
 **Current Status**: Phase 0 Complete - Project Setup ✅
 
+🎮 **Live Demo**: https://2d-adventures.vercel.app/
+
 ## Features (Planned)
 
 - Classic top-down Zelda-style gameplay
