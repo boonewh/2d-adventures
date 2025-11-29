@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Player } from '../entities/player';
+import { SpriteGenerator } from '../utils/sprite-generator';
 
 export class GameScene extends Phaser.Scene {
   private player?: Player;
@@ -13,6 +14,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Generate player sprites and animations
+    SpriteGenerator.createPlayerSprites(this);
+    SpriteGenerator.createPlayerAnimations(this);
     // Set up larger world bounds for movement
     const worldWidth = 1600;
     const worldHeight = 1200;

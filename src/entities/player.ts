@@ -9,19 +9,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     right: Phaser.Input.Keyboard.Key;
   };
   private readonly speed: number = 160;
+  private lastDirection: 'up' | 'down' | 'left' | 'right' = 'down';
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
-    // Create placeholder texture if it doesn't exist
-    if (!scene.textures.exists('player-placeholder')) {
-      const graphics = scene.add.graphics();
-      graphics.fillStyle(0x00ff00, 1);
-      graphics.fillRect(0, 0, 16, 24);
-      graphics.generateTexture('player-placeholder', 16, 24);
-      graphics.destroy();
-    }
-
-    // Create sprite with placeholder texture
-    super(scene, x, y, 'player-placeholder');
+    // Start with down-facing idle sprite
+    super(scene, x, y, 'player-down-0');
 
     // Add to scene
     scene.add.existing(this);
@@ -63,14 +55,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // Check inputs (both WASD and Arrow keys)
     if (this.cursors.left.isDown || this.wasd.left.isDown) {
       velocityX = -this.speed;
+      this.lastDirection = 'left';
     } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
       velocityX = this.speed;
+      this.lastDirection = 'right';
     }
 
     if (this.cursors.up.isDown || this.wasd.up.isDown) {
       velocityY = -this.speed;
+      this.lastDirection = 'up';
     } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
       velocityY = this.speed;
+      this.lastDirection = 'down';
     }
 
     // Normalize diagonal movement (prevents faster diagonal speed)
@@ -81,5 +77,33 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     // Apply velocity
     this.setVelocity(velocityX, velocityY);
+
+    // Update animations based on movement
+    this.updateAnimation(velocityX, velocityY);
+  }
+
+  private updateAnimation(velocityX: number, velocityY: number): void {
+    const isMoving = velocityX !== 0 || velocityY !== 0;
+
+    if (isMoving) {
+      // Play walking animation based on direction
+      // Prioritize vertical movement for diagonals
+      if (Math.abs(velocityY) > Math.abs(velocityX)) {
+        if (velocityY < 0) {
+          this.play('walk-up', true);
+        } else {
+          this.play('walk-down', true);
+        }
+      } else {
+        if (velocityX < 0) {
+          this.play('walk-left', true);
+        } else {
+          this.play('walk-right', true);
+        }
+      }
+    } else {
+      // Play idle animation based on last direction
+      this.play(`idle-${this.lastDirection}`, true);
+    }
   }
 }
