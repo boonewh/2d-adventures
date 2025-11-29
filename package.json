@@ -1,0 +1,22 @@
+{
+  "name": "reign-of-winter",
+  "version": "0.1.0",
+  "description": "A Zelda-like action RPG based on Pathfinder's Reign of Winter Adventure Path",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["game", "phaser", "rpg", "zelda", "pathfinder"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "phaser": "^3.90.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4"
+  }
+}

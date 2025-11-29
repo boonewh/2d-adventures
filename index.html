@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Reign of Winter - A Zelda-like action RPG inspired by Pathfinder's adventure path">
+  <title>Reign of Winter</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      color: #eee;
+    }
+
+    #game-container {
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .loading h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #4a9eff;
+    }
+
+    .loading p {
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div class="loading">
+      <h1>Reign of Winter</h1>
+      <p>Loading...</p>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
