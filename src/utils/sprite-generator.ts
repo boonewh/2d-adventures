@@ -221,6 +221,32 @@ export class SpriteGenerator {
   }
 
   /**
+   * Creates Ice Slime enemy sprite
+   */
+  static createIceSlimeSprite(scene: Phaser.Scene): void {
+    const size = 16;
+    const g = scene.add.graphics();
+
+    // Ice blue slime body
+    g.fillStyle(0x88ddff, 1);
+    g.fillCircle(size / 2, size / 2, 7);
+
+    // Lighter highlight
+    g.fillStyle(0xccf0ff, 1);
+    g.fillCircle(size / 2 - 2, size / 2 - 2, 3);
+
+    // Eyes
+    g.fillStyle(0x000000, 1);
+    g.fillCircle(size / 2 - 3, size / 2 - 1, 1);
+    g.fillCircle(size / 2 + 3, size / 2 - 1, 1);
+
+    g.generateTexture('ice-slime', size, size);
+    g.destroy();
+
+    console.log('Ice Slime sprite created');
+  }
+
+  /**
    * Creates animations for the player sprite
    */
   static createPlayerAnimations(scene: Phaser.Scene): void {

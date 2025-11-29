@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
+import { Damageable, Attacker } from '../types/combat';
 
-export class Player extends Phaser.Physics.Arcade.Sprite {
+export class Player extends Phaser.Physics.Arcade.Sprite implements Damageable, Attacker {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasd?: {
     up: Phaser.Input.Keyboard.Key;
@@ -8,8 +9,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     left: Phaser.Input.Keyboard.Key;
     right: Phaser.Input.Keyboard.Key;
   };
+  private attackKey?: Phaser.Input.Keyboard.Key;
   private readonly speed: number = 160;
   private lastDirection: 'up' | 'down' | 'left' | 'right' = 'down';
+
+  // Combat properties
+  public health: number = 6;
+  public maxHealth: number = 6;
+  public damage: number = 1;
+  private isAttacking: boolean = false;
+  private attackHitbox?: Phaser.Physics.Arcade.Sprite;
+  private invulnerable: boolean = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     // Start with down-facing idle sprite
@@ -43,10 +53,109 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       left: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
       right: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
     };
+
+    // Attack key (Spacebar)
+    this.attackKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+  }
+
+  // Damageable interface implementation
+  takeDamage(amount: number): void {
+    if (this.invulnerable || this.isDead()) return;
+
+    this.health = Math.max(0, this.health - amount);
+    console.log(`Player took ${amount} damage. Health: ${this.health}/${this.maxHealth}`);
+
+    // Visual feedback (flash red)
+    this.setTint(0xff0000);
+    this.scene.time.delayedCall(200, () => {
+      this.clearTint();
+    });
+
+    // Temporary invulnerability (1 second)
+    this.invulnerable = true;
+    this.scene.time.delayedCall(1000, () => {
+      this.invulnerable = false;
+    });
+
+    if (this.isDead()) {
+      this.onDeath();
+    }
+  }
+
+  isDead(): boolean {
+    return this.health <= 0;
+  }
+
+  private onDeath(): void {
+    console.log('Player died!');
+    // TODO: Game over screen, respawn, etc.
+    this.setVelocity(0, 0);
+    this.setAlpha(0.5);
+  }
+
+  // Attacker interface implementation
+  attack(): void {
+    if (this.isAttacking || this.isDead()) return;
+
+    this.isAttacking = true;
+    console.log('Player attacks!');
+
+    // Create attack hitbox in front of player
+    const hitboxSize = 20;
+    let hitboxX = this.x;
+    let hitboxY = this.y;
+
+    switch (this.lastDirection) {
+      case 'up':
+        hitboxY -= hitboxSize;
+        break;
+      case 'down':
+        hitboxY += hitboxSize;
+        break;
+      case 'left':
+        hitboxX -= hitboxSize;
+        break;
+      case 'right':
+        hitboxX += hitboxSize;
+        break;
+    }
+
+    // Create temporary attack hitbox
+    this.attackHitbox = this.scene.physics.add.sprite(hitboxX, hitboxY, '');
+    this.attackHitbox.setSize(hitboxSize, hitboxSize);
+    this.attackHitbox.setVisible(false);
+    (this.attackHitbox.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
+
+    // Remove hitbox after attack animation
+    this.scene.time.delayedCall(300, () => {
+      if (this.attackHitbox) {
+        this.attackHitbox.destroy();
+        this.attackHitbox = undefined;
+      }
+      this.isAttacking = false;
+    });
+  }
+
+  getAttackHitbox(): Phaser.Physics.Arcade.Sprite | undefined {
+    return this.attackHitbox;
   }
 
   update(): void {
-    if (!this.cursors || !this.wasd) return;
+    if (!this.cursors || !this.wasd || !this.attackKey) return;
+
+    // Don't move while dead
+    if (this.isDead()) return;
+
+    // Check for attack input
+    if (Phaser.Input.Keyboard.JustDown(this.attackKey)) {
+      this.attack();
+    }
+
+    // Can't move while attacking
+    if (this.isAttacking) {
+      this.setVelocity(0, 0);
+      return;
+    }
 
     // Reset velocity
     let velocityX = 0;
